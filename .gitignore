@@ -6,3 +6,5 @@ Temp
 obj
 .idea
 Assets/Plugins/Editor/JetBrains
+Build
+.DS_Store
