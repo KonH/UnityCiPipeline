@@ -10,7 +10,8 @@ namespace UnityCiPipeline {
 			var opts = new BuildPlayerOptions {
 				target           = BuildTarget.WebGL,
 				targetGroup      = BuildTargetGroup.WebGL,
-				locationPathName = "Build"
+				locationPathName = "Build",
+				scenes           = EditorBuildSettings.scenes.Where(s => s.enabled).Select(s => s.path).ToArray()
 			};
 			BuildPipeline.BuildPlayer(opts);
 		}
