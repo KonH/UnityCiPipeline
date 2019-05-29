@@ -50,12 +50,19 @@ Task("Install-Unity")
 
 
 Task("Build")
-	.IsDependentOn("Clean")
 	.Does(() =>
 {
 	var unityVersion = GetRequiredUnityVersion();
 	var unityPath = $"/Applications/Unity_{unityVersion}";
 	Run(unityPath, "-quit -batchmode -logFile - -executeMethod UnityCiPipeline.CustomBuildPipeline.RunBuildForVersion -projectPath . -version=1.2.3.travis");
+});
+
+Task("Upload")
+	.Does(() =>
+{
+	var version = "1.2.3.travis";
+	var destination = "konh/test-ci:html";
+	Run("butler", $"push --userversion={version} --verbose Build {destination}");
 });
 
 RunTarget(target);
