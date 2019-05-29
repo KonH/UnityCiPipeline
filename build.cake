@@ -53,7 +53,9 @@ Task("Build")
 	.IsDependentOn("Clean")
 	.Does(() =>
 {
-
+	var unityVersion = GetRequiredUnityVersion();
+	var unityPath = $"/Applications/Unity_{unityVersion}";
+	Run(unityPath, "-quit -batchmode -logFile - -executeMethod UnityCiPipeline.CustomBuildPipeline.RunBuildForVersion -projectPath . -version=1.2.3.travis");
 });
 
 RunTarget(target);
