@@ -69,16 +69,19 @@ Task("Build")
 	var unityPath = $"/Applications/Unity_{unityVersion}/Unity.app/Contents/MacOS/Unity";
 	var latestCommit = GetLatestCommit();
 	var version = GetProjectVersion() + "." + latestCommit;
+	var userName = Environment.GetEnvironmentVariable("UNITY_USERNAME");
+	var password = Environment.GetEnvironmentVariable("UNITY_PASSWORD");
 	var cmd = "-quit -batchmode -nographics -logFile - -executeMethod UnityCiPipeline.CustomBuildPipeline.RunBuildForVersion -projectPath . ";
-	cmd += $"-version={version} -username $UNITY_USERNAME -password $UNITY_PASSWORD";
+	cmd += $"-version={version} -username {userName} -password {password}";
 	Run(unityPath, cmd);
 });
 
 Task("Upload")
 	.Does(() =>
 {
+	var target = Environment.GetEnvironmentVariable("ITCH_TARGET");
 	var version = GetProjectVersion();
-	Run("butler", $"push --userversion={version} --verbose Build $ITCH_TARGET");
+	Run("butler", $"push --userversion={version} --verbose Build {target}");
 });
 
 RunTarget(target);
