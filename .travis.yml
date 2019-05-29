@@ -1,8 +1,36 @@
 language: csharp
 os: osx
+sudo: required
+rvm:
+  - 2.2
+
+env:
+  - LC_ALL="en_US.UTF-8" LANG="en_US.UTF-8"
+
+before_install:
+  - sudo mdutil -i on /
+  - sudo env PATH=$PATH gem install u3d -v '1.1.5'
+  - sudo gem list
+  - curl -L -o butler.zip https://broth.itch.ovh/butler/darwin-amd64/LATEST/archive/default
+  - unzip butler.zip
+  - chmod +x butler
+  - ./butler -V
+  - node -v
+  - npm -v
+  - npm install puppeteer
 
 install:
- - ./build.sh -tree
+  - ./build.sh -tree
+  - sudo ./build.sh -target=Install-Unity
+  - ./build.sh -target=Retrieve-Manual-Activation-File
+  - ./build.sh -target=Perform-Manual-Activation
 
- script:
- - ./build.sh -target=Clean
+script:
+  - ./build.sh -target=Clean
+  - ./build.sh -target=Build
+
+after_success:
+  - ./build.sh -target=Upload
+
+after_script:
+  - ./build.sh -target=Return-License
