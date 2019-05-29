@@ -79,8 +79,8 @@ Task("Build")
 Task("Upload")
 	.Does(() =>
 {
-	var target = Environment.GetEnvironmentVariable("ITCH_TARGET");
 	var version = GetProjectVersion();
+	var target = Environment.GetEnvironmentVariable("ITCH_TARGET");
 	Run("butler", $"push --userversion={version} --verbose Build {target}");
 });
 
