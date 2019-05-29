@@ -1,5 +1,8 @@
-language: objective-c
+language: csharp
 os: osx
 
 install:
+ - ./build.sh -tree
+
+ script:
  - ./build.sh -target=Clean
