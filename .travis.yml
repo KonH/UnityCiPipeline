@@ -1,0 +1,5 @@
+language: objective-c
+os: osx
+
+install:
+ - ./build.sh -target=Clean
