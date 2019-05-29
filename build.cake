@@ -70,7 +70,7 @@ Task("Build")
 	var latestCommit = GetLatestCommit();
 	var version = GetProjectVersion() + "." + latestCommit;
 	var cmd = "-quit -batchmode -logFile - -executeMethod UnityCiPipeline.CustomBuildPipeline.RunBuildForVersion -projectPath . ";
-	cmd += $"-version={version} -username '$UNITY_USERNAME' -password '$UNITY_PASSWORD'";
+	cmd += $"-version={version} -username $UNITY_USERNAME -password $UNITY_PASSWORD";
 	Run(unityPath, cmd);
 });
 
