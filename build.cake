@@ -24,14 +24,28 @@ Func<string, string, string> Run = (fileName, cmd) => {
 	}
 };
 
-Func<string> GetRequiredUnityVersion = () => {
-	var versionPath = "ProjectSettings/ProjectVersion.txt";
-	var prefix = "m_EditorVersion: ";
-	var lines = FileReadLines(versionPath);
+Func<string[], string, string> GetStrStartsWith = (lines, prefix) => {
 	return lines
-		.Where(l => l.StartsWith(l))
+		.Select(l => l.Trim())
+		.Where(l => l.StartsWith(prefix))
 		.Select(l => l.Substring(prefix.Length))
 		.First();
+};
+
+Func<string> GetRequiredUnityVersion = () => {
+	return GetStrStartsWith(
+		FileReadLines("ProjectSettings/ProjectVersion.txt"),
+		"m_EditorVersion: ");
+};
+
+Func<string> GetLatestCommit = () => {
+	return Run("git", "rev-parse --short HEAD");
+};
+
+Func<string> GetProjectVersion = () => {
+	return GetStrStartsWith(
+		FileReadLines("ProjectSettings/ProjectSettings.asset"),
+		"bundleVersion: ");
 };
 
 Task("Clean")
@@ -48,21 +62,21 @@ Task("Install-Unity")
 	Run("u3d", $"install {unityVersion}");
 });
 
-
 Task("Build")
 	.Does(() =>
 {
 	var unityVersion = GetRequiredUnityVersion();
-	var unityPath = $"/Applications/Unity_{unityVersion}";
-	Run(unityPath, "-quit -batchmode -logFile - -executeMethod UnityCiPipeline.CustomBuildPipeline.RunBuildForVersion -projectPath . -version=1.2.3.travis");
+	var unityPath = $"/Applications/Unity_{unityVersion}/Unity.app/Contents/MacOS/Unity";
+	var latestCommit = GetLatestCommit();
+	var version = GetProjectVersion() + "." + latestCommit;
+	Run(unityPath, $"-quit -batchmode -logFile - -executeMethod UnityCiPipeline.CustomBuildPipeline.RunBuildForVersion -projectPath . -version={version}");
 });
 
 Task("Upload")
 	.Does(() =>
 {
-	var version = "1.2.3.travis";
-	var destination = "konh/test-ci:html";
-	Run("butler", $"push --userversion={version} --verbose Build {destination}");
+	var version = GetProjectVersion();
+	Run("butler", $"push --userversion={version} --verbose Build $ITCH_TARGET");
 });
 
 RunTarget(target);
