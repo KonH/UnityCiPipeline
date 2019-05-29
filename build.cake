@@ -69,8 +69,10 @@ Task("Build")
 	var unityPath = $"/Applications/Unity_{unityVersion}/Unity.app/Contents/MacOS/Unity";
 	var latestCommit = GetLatestCommit();
 	var version = GetProjectVersion() + "." + latestCommit;
+	var userName = Environment.GetEnvironmentVariable("UNITY_USERNAME");
+	var password = Environment.GetEnvironmentVariable("UNITY_PASSWORD");
 	var cmd = "-quit -batchmode -nographics -logFile - -executeMethod UnityCiPipeline.CustomBuildPipeline.RunBuildForVersion -projectPath . ";
-	cmd += $"-version={version} -force-free";
+	cmd += $"-version={version} -username {userName} -password {password} -force-free";
 	Run(unityPath, cmd);
 });
 
