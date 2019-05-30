@@ -1,3 +1,5 @@
+process.on('unhandledRejection', up => { throw up });
+
 const puppeteer = require('puppeteer');
 const fs = require('fs');
 
@@ -17,7 +19,7 @@ try {
     });
     const page = await browser.newPage();
 
-    // open manual page & wait for login redirect
+    console.log('open manual page & wait for login redirect');
 
 	await page.goto('https://license.unity3d.com/manual');
 
@@ -26,36 +28,40 @@ try {
 
 	await page.waitForSelector(mailInputSelector);
 
-    // enter credentials
+	await page.screenshot({ path: 'debug_images/00_loaded_page.png' });
+
+	console.log('enter credentials');
 
 	await page.type(mailInputSelector, process.env.UNITY_USERNAME);
 	await page.type(passInputSelector, process.env.UNITY_PASSWORD);
 
 	await page.screenshot({ path: 'debug_images/01_entered_credentials.png' });
 
-    // click submit
+    console.log('click submit');
 
 	await page.click('input[name=commit]');
 
-    // wait for license upload form
+	await page.screenshot({ path: 'debug_images/02_pressed_commit.png' });
+
+    console.log('wait for license upload form');
 
 	const licenseUploadfield = '#licenseFile';
 
 	await page.waitForSelector(licenseUploadfield);
 
-	await page.screenshot({ path: 'debug_images/02_opened_form.png' });
+	await page.screenshot({ path: 'debug_images/03_opened_form.png' });
 
-    // enalbe interception
+    console.log('enable interception');
     
 	await page.setRequestInterception(true);
 
-    // upload license
+    console.log('upload license');
 
 	page.once("request", interceptedRequest => {
 		
         interceptedRequest.continue({
             method: "POST",
-            postData: fs.readFileSync(process.env.UNITY_ACTIVATION_FILE, 'utf8'),
+            postData: fs.readFileSync("unity3d.alf", 'utf8'),
             headers: { "Content-Type": "text/xml" },
         });
 
@@ -63,9 +69,9 @@ try {
 
 	await page.goto('https://license.unity3d.com/genesis/activation/create-transaction');
 
-	await page.screenshot({ path: 'debug_images/03_created_transaction.png' });
+	await page.screenshot({ path: 'debug_images/04_created_transaction.png' });
 
-    // set license to be personal
+    console.log('set license to be personal');
 
     page.once("request", interceptedRequest => {
         interceptedRequest.continue({
@@ -79,7 +85,7 @@ try {
 
     await page.screenshot({ path: 'debug_images/04_updated_transaction.png' });
     
-    // get license content
+    console.log('get license content');
 
     page.once("request", interceptedRequest => {
         interceptedRequest.continue({
@@ -91,12 +97,12 @@ try {
 
     page.on('response', async response => {  
                 
-        // write license
+        console.log('write license');
 
         try {
             const data = await response.text();
             const dataJson = await JSON.parse(data);
-            fs.writeFileSync(process.env.UNITY_LICENSE_FILE, dataJson.xml);
+            fs.writeFileSync("Unity_lic.ulf", dataJson.xml);
             console.log('license file written.');
 
             await page.screenshot({ path: 'debug_images/05_received_license.png' });
@@ -111,7 +117,4 @@ try {
     await page.goto('https://license.unity3d.com/genesis/activation/download-license');
     await page.waitFor(1000);
     await browser.close();
-
-
-
 })();
