@@ -24,6 +24,15 @@ Func<string, string, string> Run = (fileName, cmd) => {
 	}
 };
 
+Func<string, string> RunUnity = (cmd) => {
+	var unityVersion = GetRequiredUnityVersion();
+	var unityPath = $"/Applications/Unity_{unityVersion}/Unity.app/Contents/MacOS/Unity";
+	var userName = Environment.GetEnvironmentVariable("UNITY_USERNAME");
+	var password = Environment.GetEnvironmentVariable("UNITY_PASSWORD");
+	var fullCmd = cmd + $" -quit -batchmode -nographics -logFile - -username {userName} -password {password}";
+	return Run(unityPath, fullCmd);
+};
+
 Func<string[], string, string> GetStrStartsWith = (lines, prefix) => {
 	return lines
 		.Select(l => l.Trim())
@@ -62,18 +71,22 @@ Task("Install-Unity")
 	Run("u3d", $"install {unityVersion}");
 });
 
+Task("Retrieve-Manual-Activation-File")
+	.Does(() =>
+{
+	RunUnity("-createManualActivationFile");
+	var unityVersion = GetRequiredUnityVersion();
+	var activationFileName = $"Unity_v{unityVersion}.alf";
+	Information($"Expected activation file name: {activationFileName}");
+	Information(FileReadText(activationFileName));
+});
+
 Task("Build")
 	.Does(() =>
 {
-	var unityVersion = GetRequiredUnityVersion();
-	var unityPath = $"/Applications/Unity_{unityVersion}/Unity.app/Contents/MacOS/Unity";
 	var latestCommit = GetLatestCommit();
 	var version = GetProjectVersion() + "." + latestCommit;
-	var userName = Environment.GetEnvironmentVariable("UNITY_USERNAME");
-	var password = Environment.GetEnvironmentVariable("UNITY_PASSWORD");
-	var cmd = "-quit -batchmode -nographics -logFile - -executeMethod UnityCiPipeline.CustomBuildPipeline.RunBuildForVersion -projectPath . ";
-	cmd += $"-version={version} -username {userName} -password {password} -force-free";
-	Run(unityPath, cmd);
+	RunUnity($"-executeMethod UnityCiPipeline.CustomBuildPipeline.RunBuildForVersion -projectPath . -version={version}");
 });
 
 Task("Upload")
