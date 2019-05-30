@@ -79,7 +79,7 @@ Task("Retrieve-Manual-Activation-File")
 	var activationFileName = $"Unity_v{unityVersion}.alf";
 	Information($"Expected activation file name: {activationFileName}");
 	RunUnity("-createManualActivationFile", true);
-	Information(FileReadText(activationFileName));
+	Information($"Activation file content: {FileReadText(activationFileName)}");
 });
 
 Task("Build")
