@@ -4,7 +4,7 @@
 var target = Argument("target", string.Empty);
 var buildDir = Directory("./Build");
 
-Func<string, string, string> Run = (fileName, cmd) => {
+Func<string, string, bool, string> Run = (fileName, cmd, ignoreExitCode) => {
 	var settings = new ProcessSettings {
 		RedirectStandardOutput = true,
 		RedirectStandardError  = true,
@@ -17,20 +17,21 @@ Func<string, string, string> Run = (fileName, cmd) => {
 		Information($"Stdout:\n{stdout}");
 		Information($"Stderr:\n{string.Join("\n", proc.GetStandardError())}");
 		var exitCode = proc.GetExitCode();
-		if ( exitCode != 0 ) {
-			throw new Exception($"Exit code: {exitCode}");
+		Information($"Exit code is {exitCode}");
+		if ( (exitCode != 0) && !ignoreExitCode ) {
+			throw new Exception($"Run '{fileName}' failed.");
 		}
 		return stdout;
 	}
 };
 
-Func<string, string> RunUnity = (cmd) => {
+Func<string, bool, string> RunUnity = (cmd, ignoreExitCode) => {
 	var unityVersion = GetRequiredUnityVersion();
 	var unityPath = $"/Applications/Unity_{unityVersion}/Unity.app/Contents/MacOS/Unity";
 	var userName = Environment.GetEnvironmentVariable("UNITY_USERNAME");
 	var password = Environment.GetEnvironmentVariable("UNITY_PASSWORD");
 	var fullCmd = cmd + $" -quit -batchmode -nographics -logFile - -username {userName} -password {password}";
-	return Run(unityPath, fullCmd);
+	return Run(unityPath, fullCmd, ignoreExitCode);
 };
 
 Func<string[], string, string> GetStrStartsWith = (lines, prefix) => {
@@ -48,7 +49,7 @@ Func<string> GetRequiredUnityVersion = () => {
 };
 
 Func<string> GetLatestCommit = () => {
-	return Run("git", "rev-parse --short HEAD");
+	return Run("git", "rev-parse --short HEAD", false);
 };
 
 Func<string> GetProjectVersion = () => {
@@ -68,16 +69,16 @@ Task("Install-Unity")
 {
 	var unityVersion = GetRequiredUnityVersion();
 	Information($"Required Unity version is '{unityVersion}'");
-	Run("u3d", $"install {unityVersion}");
+	Run("u3d", $"install {unityVersion}", false);
 });
 
 Task("Retrieve-Manual-Activation-File")
 	.Does(() =>
 {
-	RunUnity("-createManualActivationFile");
 	var unityVersion = GetRequiredUnityVersion();
 	var activationFileName = $"Unity_v{unityVersion}.alf";
 	Information($"Expected activation file name: {activationFileName}");
+	RunUnity("-createManualActivationFile", true);
 	Information(FileReadText(activationFileName));
 });
 
@@ -86,7 +87,7 @@ Task("Build")
 {
 	var latestCommit = GetLatestCommit();
 	var version = GetProjectVersion() + "." + latestCommit;
-	RunUnity($"-executeMethod UnityCiPipeline.CustomBuildPipeline.RunBuildForVersion -projectPath . -version={version}");
+	RunUnity($"-executeMethod UnityCiPipeline.CustomBuildPipeline.RunBuildForVersion -projectPath . -version={version}", false);
 });
 
 Task("Upload")
@@ -94,7 +95,7 @@ Task("Upload")
 {
 	var version = GetProjectVersion();
 	var target = Environment.GetEnvironmentVariable("ITCH_TARGET");
-	Run("butler", $"push --userversion={version} --verbose Build {target}");
+	Run("butler", $"push --userversion={version} --verbose Build {target}", false);
 });
 
 RunTarget(target);
