@@ -29,8 +29,14 @@ Func<string, bool, string> RunUnity = (cmd, ignoreExitCode) => {
 	var unityVersion = GetRequiredUnityVersion();
 	var unityPath = $"/Applications/Unity_{unityVersion}/Unity.app/Contents/MacOS/Unity";
 	var userName = Environment.GetEnvironmentVariable("UNITY_USERNAME");
+	if ( string.IsNullOrEmpty(userName) ) {
+		throw new Exception("No UNITY_USERNAME provided!");
+	}
 	var password = Environment.GetEnvironmentVariable("UNITY_PASSWORD");
-	var fullCmd = cmd + $" -quit -batchmode -nographics -logFile - -username {userName} -password {password}";
+	if ( string.IsNullOrEmpty(password) ) {
+		throw new Exception("No UNITY_PASSWORD provided!");
+	}
+	var fullCmd = cmd + $" -quit -batchmode -nographics -logFile - -username {userName} -password {password} -manualLicenseFile Unity_lic.ulf";
 	return Run(unityPath, fullCmd, ignoreExitCode);
 };
 
@@ -95,7 +101,37 @@ Task("Upload")
 {
 	var version = GetProjectVersion();
 	var target = Environment.GetEnvironmentVariable("ITCH_TARGET");
+	if ( string.IsNullOrEmpty(target) ) {
+		throw new Exception("No ITCH_TARGET provided!");
+	}
 	Run("butler", $"push --userversion={version} --verbose Build {target}", false);
+});
+
+Task("Encode-License-File")
+	.Does(() =>
+{
+	var fileName = Argument("fileName", "Unity_lic.ulf");
+	if ( !FileExists(fileName) ) {
+		throw new Exception($"Can't find '{fileName}'");
+	}
+	var content = FileReadText(fileName);
+	var bytes = Encoding.UTF8.GetBytes(content);
+	var base64 = Convert.ToBase64String(bytes);
+	Information(base64);
+});
+
+Task("Decode-License-File")
+	.Does(() =>
+{
+	var base64 = Environment.GetEnvironmentVariable("UNITY_ULF");
+	if ( string.IsNullOrEmpty(base64) ) {
+		throw new Exception("No UNITY_ULF provided!");
+	}
+	var bytes = Convert.FromBase64String(base64);
+	var content = Encoding.UTF8.GetString(bytes);
+	var fileName = "Unity_lic.ulf";
+	FileWriteText(fileName, content);
+	Information("Is license file exits? " + FileExists(fileName));
 });
 
 RunTarget(target);
