@@ -15,15 +15,11 @@ before_install:
   - unzip butler.zip
   - chmod +x butler
   - ./butler -V
-  - node -v
-  - npm -v
-  - npm install puppeteer
 
 install:
   - ./build.sh -tree
   - sudo ./build.sh -target=Install-Unity
-  - ./build.sh -target=Retrieve-Manual-Activation-File
-  - ./build.sh -target=Perform-Manual-Activation
+  - ./build.sh -target=Decode-License-File
 
 script:
   - ./build.sh -target=Clean
