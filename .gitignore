@@ -10,5 +10,3 @@ Build
 .DS_Store
 tools/*
 !tools/packages.config
-debug_images
-node_modules

@@ -76,32 +76,6 @@ Task("Install-Unity")
 	Run("u3d", $"install {unityVersion}", false);
 });
 
-Task("Retrieve-Manual-Activation-File")
-	.Does(() =>
-{
-	var unityVersion = GetRequiredUnityVersion();
-	var activationFileName = $"Unity_v{unityVersion}.alf";
-	Information($"Expected activation file name: {activationFileName}");
-	RunUnity("-createManualActivationFile", true);
-	Information($"Activation file content: {FileReadText(activationFileName)}");
-});
-
-Task("Perform-Manual-Activation")
-	.Does(() =>
-{
-	var unityVersion = GetRequiredUnityVersion();
-	var activationFileName = $"Unity_v{unityVersion}.alf";
-	Information($"Save {activationFileName} as common unity3d.alf");
-	CopyFile(activationFileName, "unity3d.alf");
-
-	Run("node", "manual_activation.js", false);
-
-	var licenseFileName = GetManualLicenseFileName();
-	if ( FileExists(licenseFileName) ) {
-		throw new Exception("Can't find license file!");
-	}
-});
-
 Task("Return-License")
 	.Does(() =>
 {
