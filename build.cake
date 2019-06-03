@@ -107,6 +107,16 @@ Task("Upload")
 	Run("butler", $"push --userversion={version} --verbose Build {target}", false);
 });
 
+Task("Retrieve-Manual-Activation-File")
+	.Does(() =>
+{
+	var unityVersion = GetRequiredUnityVersion();
+	var activationFileName = $"Unity_v{unityVersion}.alf";
+	Information($"Expected activation file name: {activationFileName}");
+	RunUnity("-createManualActivationFile", true);
+	Information($"Activation file content:\n{FileReadText(activationFileName)}");
+});
+
 Task("Encode-License-File")
 	.Does(() =>
 {
