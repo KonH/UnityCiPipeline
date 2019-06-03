@@ -27,7 +27,7 @@ Func<string, string, bool, string> Run = (fileName, cmd, ignoreExitCode) => {
 
 Func<string, bool, string> RunUnity = (cmd, ignoreExitCode) => {
 	var unityVersion = GetRequiredUnityVersion();
-	var unityPath = $"/Applications/Unity_{unityVersion}/Unity.app/Contents/MacOS/Unity";
+	var unityPath = $"/opt/unity-editor-{unityVersion}/Editor/Unity";
 	var userName = Environment.GetEnvironmentVariable("UNITY_USERNAME");
 	if ( string.IsNullOrEmpty(userName) ) {
 		throw new Exception("No UNITY_USERNAME provided!");
