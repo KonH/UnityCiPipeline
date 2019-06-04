@@ -36,7 +36,7 @@ Func<string, bool, string> RunUnity = (cmd, ignoreExitCode) => {
 	if ( string.IsNullOrEmpty(password) ) {
 		throw new Exception("No UNITY_PASSWORD provided!");
 	}
-	var fullCmd = cmd + $" -quit -batchmode -nographics -logFile - -username {userName} -password {password} -manualLicenseFile Unity_lic.ulf";
+	var fullCmd = cmd + $" -quit -batchmode -nographics -logFile - -username {userName} -password {password}";
 	return Run(unityPath, fullCmd, ignoreExitCode);
 };
 
@@ -142,6 +142,12 @@ Task("Decode-License-File")
 	var fileName = "Unity_lic.ulf";
 	FileWriteText(fileName, content);
 	Information("Is license file exits? " + FileExists(fileName));
+});
+
+Task("Use-Manual-Activation-File")
+	.Does(() =>
+{
+	RunUnity("-manualLicenseFile Unity_lic.ulf", true);
 });
 
 RunTarget(target);
