@@ -79,7 +79,7 @@ Task("Install-Unity")
 {
 	var unityVersion = GetRequiredUnityVersion();
 	Information($"Required Unity version is '{unityVersion}'");
-	Run("u3d", $"install {unityVersion}", false);
+	Run("u3d", $"install {unityVersion} -p Unity,WebGL", false);
 });
 
 Task("Return-License")
