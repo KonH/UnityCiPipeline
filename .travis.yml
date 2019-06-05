@@ -8,9 +8,5 @@ before_install:
 - docker pull konh/unity_build_image:latest
 jobs:
   include:
-  - stage: install
-    script: "docker run -e UNITY_USERNAME -e UNITY_PASSWORD konh/unity_build_image:latest /bin/bash -c /root/docker_install.sh"
   - stage: build
-    script: "docker run -e UNITY_USERNAME -e UNITY_PASSWORD -e UNITY_ULF konh/unity_build_image:latest /bin/bash -c /root/docker_build.sh"
-  - stage: upload
-    script: "docker run -e BUTLER_API_KEY -e ITCH_TARGET konh/unity_build_image:latest /bin/bash -c /root/docker_upload.sh"
+    script: "docker run -e UNITY_USERNAME -e UNITY_PASSWORD -e UNITY_ULF -e BUTLER_API_KEY -e ITCH_TARGET konh/unity_build_image:latest /bin/bash -c /root/docker_install.sh && /root/docker_build.sh && /root/docker_upload.sh"
