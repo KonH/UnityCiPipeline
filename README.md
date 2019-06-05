@@ -10,11 +10,23 @@ Example of usage Unity projects in continuous integration scenarios.
 
 ## How to use
 
-- Perform Unity manual activation and save .ulf file
-- Run ./build.sh -target=Encode-License-File and save base64 value
+### Initial setup
+
+- Install docker locally
+- docker run -e UNITY_USERNAME={unity_account_username} -e UNITY_PASSWORD={unity_account_password} -it unity_build_image
+	- ~/docker_install.sh
+	- ~/docker_activate.sh
+	- exit
+- Save activation file content into .alf file
+- Go to https://license.unity3d.com/manual, upload saved file, download license file
+- ./build.sh -target=Encode-License-File -fileName={path_to_ulf}
+- Save encoded content into UNITY_ULF env variable later
+
+### Travis usage
+
 - Create your own repo and enable it at https://travis-ci.org/
 - Set up butler (https://itch.io/docs/butler/)
-- Adds two environment variables into Travis repository settings:
+- Adds several environment variables into Travis repository settings:
 	- **BUTLER_API_KEY** (see 'Running butler from CI builds' section at https://itch.io/docs/butler/login.html)
 	- **ITCH_TARGET** (path to your game like konh/test-ci:html)
 	- **UNITY_USERNAME** (your Unity account credentials)
@@ -22,7 +34,3 @@ Example of usage Unity projects in continuous integration scenarios.
 	- **UNITY_ULF** (base64 of your .ulf file)
 - Push your repo changes
 - See how your game is published to itch.io
-
-## License workaround
-
-This approach potentially not working due to license issues, you can try to add serial to Unity start command, if you use Plus/Pro subscription.
