@@ -1,32 +1,16 @@
-language: csharp
-os: osx
+language: bash
 sudo: required
-rvm:
-  - 2.2
 
-env:
-  - LC_ALL="en_US.UTF-8" LANG="en_US.UTF-8"
+services:
+- docker
 
 before_install:
-  - sudo mdutil -i on /
-  - sudo env PATH=$PATH gem install u3d -v '1.1.5'
-  - sudo gem list
-  - curl -L -o butler.zip https://broth.itch.ovh/butler/darwin-amd64/LATEST/archive/default
-  - unzip butler.zip
-  - chmod +x butler
-  - ./butler -V
-
-install:
-  - ./build.sh -tree
-  - sudo ./build.sh -target=Install-Unity
-  - ./build.sh -target=Decode-License-File
-
-script:
-  - ./build.sh -target=Clean
-  - ./build.sh -target=Build
-
-after_success:
-  - ./build.sh -target=Upload
-
-after_script:
-  - ./build.sh -target=Return-License
+- docker pull konh/unity_build_image:latest
+jobs:
+  include:
+  - stage: install
+    script: "docker run -e UNITY_USERNAME -e UNITY_PASSWORD konh/unity_build_image:latest /bin/bash -c ~/docker_install.sh"
+  - stage: build
+    script: "docker run -e UNITY_USERNAME -e UNITY_PASSWORD -e UNITY_ULF konh/unity_build_image:latest /bin/bash -c ~/docker_build.sh"
+  - stage: upload
+    script: "docker run -e BUTLER_API_KEY -e ITCH_TARGET konh/unity_build_image:latest /bin/bash -c ~/docker_upload.sh"
