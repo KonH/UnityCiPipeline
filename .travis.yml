@@ -9,4 +9,4 @@ before_install:
 jobs:
   include:
   - stage: build
-    script: "docker run -e UNITY_USERNAME -e UNITY_PASSWORD -e UNITY_ULF -e BUTLER_API_KEY -e ITCH_TARGET konh/unity_build_image:latest /bin/bash -c \"chmod +x /root/docker_install.sh && /root/docker_install.sh && chmod +x /root/docker_build.sh && /root/docker_build.sh && chmod +x /root/docker_upload.sh && /root/docker_upload.sh\"""
+    script: "docker run -e UNITY_USERNAME -e UNITY_PASSWORD -e UNITY_ULF -e BUTLER_API_KEY -e ITCH_TARGET konh/unity_build_image:latest /bin/bash -c \"chmod +x /root/docker_install.sh && /root/docker_install.sh && chmod +x /root/docker_build.sh && /root/docker_build.sh && chmod +x /root/docker_upload.sh && /root/docker_upload.sh\""
