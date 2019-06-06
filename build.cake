@@ -101,7 +101,7 @@ Task("Build")
 	if ( string.IsNullOrEmpty(buildTarget) ) {
 		buildTarget = "WebGL";
 	}
-	RunUnity($"-executeMethod UnityCiPipeline.CustomBuildPipeline.RunBuildForVersion -projectPath . -version={version}", false);
+	RunUnity($"-executeMethod UnityCiPipeline.CustomBuildPipeline.RunBuildForVersion -projectPath . -version={version} -buildTarget={buildTarget}", false);
 });
 
 Task("Upload")

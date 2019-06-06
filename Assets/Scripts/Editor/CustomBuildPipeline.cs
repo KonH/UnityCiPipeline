@@ -5,7 +5,6 @@ using UnityEngine;
 
 namespace UnityCiPipeline {
 	public class CustomBuildPipeline : MonoBehaviour {
-		[MenuItem("BuildPipeline/RunBuild")]
 		public static void RunBuild(BuildTarget target) {
 			var targetGroup = BuildPipeline.GetBuildTargetGroup(target);
 			var opts = new BuildPlayerOptions {
@@ -21,10 +20,7 @@ namespace UnityCiPipeline {
 		public static void RunBuild_WebGL() => RunBuild(BuildTarget.WebGL);
 
 		public static void RunBuildForVersion() {
-			var targetVariable = Environment.GetEnvironmentVariable("BUILD_TARGET");
-			if ( string.IsNullOrEmpty(targetVariable) ) {
-				throw new InvalidOperationException("BUILD_TARGET isn't provided!");
-			}
+			var targetVariable = GetBuildTarget();
 			var target = (BuildTarget)Enum.Parse(typeof(BuildTarget), targetVariable);
 			var commitHash = GetVersion();
 			Debug.Log($"RunBuildForCommit: version='{commitHash}'");
@@ -36,6 +32,13 @@ namespace UnityCiPipeline {
 			return Environment.GetCommandLineArgs()
 				.Where(a => a.StartsWith("-version="))
 				.Select(a => a.Remove(0, "-version=".Length))
+				.First();
+		}
+
+		static string GetBuildTarget() {
+			return Environment.GetCommandLineArgs()
+				.Where(a => a.StartsWith("-buildTarget="))
+				.Select(a => a.Remove(0, "-buildTarget=".Length))
 				.First();
 		}
 
