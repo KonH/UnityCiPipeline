@@ -87,7 +87,7 @@ RUN wget -O butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/
 
 ADD CACerts.pem /root/.local/share/unity3d/Certificates/
 
-ADD docker_install.sh /root
-ADD docker_activate.sh /root
-ADD docker_build.sh /root
-ADD docker_upload.sh /root
+ADD activate.sh /
+ADD build.sh /
+ADD clone.sh /
+ADD install.sh /
