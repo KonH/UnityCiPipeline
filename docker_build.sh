@@ -6,4 +6,4 @@ docker run \
 	-e BUTLER_API_KEY -e ITCH_TARGET \
 	-e INSTALL_ARGS -e BUILD_TARGET \
 	konh/unity_build_image:latest \
-	/bin/bash -c \"chmod +x /build.sh && ./build.sh"
+	/bin/bash -c "chmod +x /build.sh && ./build.sh"
