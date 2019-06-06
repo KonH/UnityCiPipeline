@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# env variables
+# BUILD_TARGET
+
+# arguments
 UNITY_PATH=$1       # path to Unity executable (.../Unity.app/Contents/MacOS/Unity)
 ITCH_DESTINATION=$2 # itch.io target like userName/projectName:platform
 VERSION=$3          # application version

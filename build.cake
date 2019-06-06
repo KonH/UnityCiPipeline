@@ -79,7 +79,11 @@ Task("Install-Unity")
 {
 	var unityVersion = GetRequiredUnityVersion();
 	Information($"Required Unity version is '{unityVersion}'");
-	Run("u3d", $"install {unityVersion} -p Unity,WebGL", false);
+	var installArgs = Environment.GetEnvironmentVariable("INSTALL_ARGS");
+	if ( string.IsNullOrEmpty(installArgs) ) {
+		installArgs = "Unity,WebGL";
+	}
+	Run("u3d", $"install {unityVersion} -p {install_args}", false);
 });
 
 Task("Return-License")
@@ -93,6 +97,10 @@ Task("Build")
 {
 	var latestCommit = GetLatestCommit();
 	var version = GetProjectVersion() + "." + latestCommit;
+	var buildTarget = Environment.GetEnvironmentVariable("BUILD_TARGET");
+	if ( string.IsNullOrEmpty(buildTarget) ) {
+		buildTarget = "WebGL";
+	}
 	RunUnity($"-executeMethod UnityCiPipeline.CustomBuildPipeline.RunBuildForVersion -projectPath . -version={version}", false);
 });
 
