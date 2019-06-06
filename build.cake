@@ -83,7 +83,7 @@ Task("Install-Unity")
 	if ( string.IsNullOrEmpty(installArgs) ) {
 		installArgs = "Unity,WebGL";
 	}
-	Run("u3d", $"install {unityVersion} -p {install_args}", false);
+	Run("u3d", $"install {unityVersion} -p {installArgs}", false);
 });
 
 Task("Return-License")
