@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/KonH/UnityCiPipeline.svg?branch=master)](https://travis-ci.org/KonH/UnityCiPipeline)
 # UnityCiPipeline
 
 Example of usage Unity projects in continuous integration scenarios.
