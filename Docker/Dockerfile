@@ -78,14 +78,14 @@ RUN apt-get install gnupg ca-certificates \
 
 # U3D for further unity install
 # Oficial way
-# RUN gem install u3d -v '1.1.5' && gem list
+RUN gem install u3d -v '1.1.5' && gem list
 # Trying to fix available issue
-RUN git clone https://github.com/niezbop/u3d.git \
-    && cd u3d \
-    && git checkout -b custom_download_page origin/feature/custom_download_page \
-    && git log -1 \
-    && chmod a+x build.sh \
-    && ./build.sh
+# RUN git clone https://github.com/niezbop/u3d.git \
+#    && cd u3d \
+#    && git checkout -b custom_download_page origin/feature/custom_download_page \
+#    && git log -1 \
+#    && chmod a+x build.sh \
+#    && ./build.sh
 RUN u3d -v
 
 # Butler for itch.io upload
