@@ -14,7 +14,7 @@ Example of usage Unity projects in continuous integration scenarios.
 ### Initial setup
 
 - Install docker locally
-- docker run -e UNITY_USERNAME={unity_account_username} -e UNITY_PASSWORD={unity_account_password} konh/unity_build_image:latest /bin/bash -c "./activate.sh"
+- docker run -e UNITY_USERNAME={unity_account_username} -e UNITY_PASSWORD={unity_account_password} -e REPO_URL={your_repo_url} konh/unity_build_image:latest /bin/bash -c "./activate.sh"
 - Save activation file content into .alf file
 - Go to https://license.unity3d.com/manual, upload saved file, download license file
 - ./build.sh -target=Encode-License-File -fileName={path_to_ulf}
