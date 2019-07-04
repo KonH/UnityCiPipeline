@@ -77,8 +77,10 @@ Task("Clean")
 Task("Install-Unity")
 	.Does(() =>
 {
+	Information("Show help:");
+	Run("u3d", "--help", false);
 	Information("Available Unity versions:");
-	Run("u3d", "available", false);
+	Run("u3d", "available --no-central", false);
 	var unityVersion = GetRequiredUnityVersion();
 	Information($"Required Unity version is '{unityVersion}'");
 	var installArgs = Environment.GetEnvironmentVariable("INSTALL_ARGS");
