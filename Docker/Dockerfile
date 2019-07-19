@@ -10,8 +10,8 @@ ENV LC_CTYPE C.UTF-8
 ENV LC_MESSAGES C.UTF-8
 
 # Main dependencies
-RUN apt-get update -qq; \
-    apt-get install -qq -y \
+RUN apt-get update -qq
+RUN apt-get install -qq -y \
     gconf-service \
     lib32gcc1 \
     lib32stdc++6 \
@@ -60,32 +60,31 @@ RUN apt-get update -qq; \
     libpq5 \
     xvfb \
     wget \
-	ruby-dev \
-	git \
-	curl \
-	sudo \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    ruby-dev \
+    git \
+    curl \
+    sudo
+RUN apt-get clean
+RUN rm -rf /var/lib/apt/lists/*
 
 # Update mono
-RUN apt-get install gnupg ca-certificates \
-    && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF \
-    && echo "deb https://download.mono-project.com/repo/ubuntu stable-bionic main" | tee /etc/apt/sources.list.d/mono-official-stable.list; \
-    apt-get update -qq; \
-    apt-get install -qq -y mono-devel \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get install gnupg ca-certificates
+RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
+RUN echo "deb https://download.mono-project.com/repo/ubuntu stable-bionic/snapshots/5.20 main" | tee /etc/apt/sources.list.d/mono-official-stable.list
+RUN apt-get update -qq
+RUN apt-get install -qq -y mono-devel
+RUN apt-get clean
+RUN rm -rf /var/lib/apt/lists/*
 
 # U3D for further unity install
 # Oficial way
-RUN gem install u3d -v '1.1.5' && gem list
+# RUN gem install u3d -v '1.1.5' && gem list
 # Trying to fix available issue
-# RUN git clone https://github.com/niezbop/u3d.git \
-#    && cd u3d \
-#    && git checkout -b custom_download_page origin/feature/custom_download_page \
-#    && git log -1 \
-#    && chmod a+x build.sh \
-#    && ./build.sh
+RUN git clone https://github.com/DragonBox/u3d.git \
+    && cd u3d \
+    && git log -1 \
+    && chmod a+x build.sh \
+    && ./build.sh
 RUN u3d -v
 
 # Butler for itch.io upload
