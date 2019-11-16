@@ -77,7 +77,7 @@ Task("Install-Unity")
 	Information("Show help:");
 	Run("u3d", "--help", false);
 	Information("Available Unity versions:");
-	Run("u3d", "available -f --no-central", false);
+	Run("u3d", "available -f --no-central --trace --verbose", false);
 	var unityVersion = GetRequiredUnityVersion();
 	Information($"Required Unity version is '{unityVersion}'");
 	var installArgs = Environment.GetEnvironmentVariable("INSTALL_ARGS");
@@ -85,7 +85,7 @@ Task("Install-Unity")
 		installArgs = "Unity,WebGL";
 	}
 	Information("Install wanted Unity version:");
-	Run("u3d", $"install {unityVersion} -p {installArgs} --no-central --trace --verbose", false);
+	Run("u3d", $"install {unityVersion} -p {installArgs} --trace --verbose", false);
 });
 
 Task("Return-License")
