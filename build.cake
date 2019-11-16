@@ -1,5 +1,4 @@
 #tool nuget:?package=NUnit.ConsoleRunner&version=3.4.0
-#addin nuget:?package=Cake.FileHelpers&version=3.2.0
 
 var target = Argument("target", string.Empty);
 var buildDir = Directory("./Build");
@@ -50,7 +49,7 @@ Func<string[], string, string> GetStrStartsWith = (lines, prefix) => {
 
 Func<string> GetRequiredUnityVersion = () => {
 	return GetStrStartsWith(
-		FileReadLines("ProjectSettings/ProjectVersion.txt"),
+		System.IO.File.ReadAllLines("ProjectSettings/ProjectVersion.txt"),
 		"m_EditorVersion: ");
 };
 
@@ -60,7 +59,7 @@ Func<string> GetLatestCommit = () => {
 
 Func<string> GetProjectVersion = () => {
 	return GetStrStartsWith(
-		FileReadLines("ProjectSettings/ProjectSettings.asset"),
+		System.IO.File.ReadAllLines("ProjectSettings/ProjectSettings.asset"),
 		"bundleVersion: ");
 };
 
@@ -127,7 +126,7 @@ Task("Retrieve-Manual-Activation-File")
 	var activationFileName = $"Unity_v{unityVersion}.alf";
 	Information($"Expected activation file name: {activationFileName}");
 	RunUnity("-createManualActivationFile", true);
-	Information($"Activation file content:\n{FileReadText(activationFileName)}");
+	Information($"Activation file content:\n{System.IO.File.ReadAllText(activationFileName)}");
 });
 
 Task("Encode-License-File")
@@ -137,7 +136,7 @@ Task("Encode-License-File")
 	if ( !FileExists(fileName) ) {
 		throw new Exception($"Can't find '{fileName}'");
 	}
-	var content = FileReadText(fileName);
+	var content = System.IO.File.ReadAllText(fileName);
 	var bytes = Encoding.UTF8.GetBytes(content);
 	var base64 = Convert.ToBase64String(bytes);
 	Information(base64);
@@ -153,7 +152,7 @@ Task("Decode-License-File")
 	var bytes = Convert.FromBase64String(base64);
 	var content = Encoding.UTF8.GetString(bytes);
 	var fileName = "Unity_lic.ulf";
-	FileWriteText(fileName, content);
+	System.IO.File.WriteAllText(fileName, content);
 	Information("Is license file exits? " + FileExists(fileName));
 });
 
