@@ -85,7 +85,7 @@ Task("Install-Unity")
 		installArgs = "Unity,WebGL";
 	}
 	Information("Install wanted Unity version:");
-	Run("u3d", $"install {unityVersion} -p {installArgs}", false);
+	Run("u3d", $"install {unityVersion} -p {installArgs} --no-central --trace --verbose", false);
 });
 
 Task("Return-License")
